@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io"
 	"log/slog"
 	"net"
@@ -75,7 +74,7 @@ func (s *Server) SetWebhook(ctx context.Context, path string) error {
 		return nil
 	} else if info.URL != "" {
 		slog.Error("[*] webhook is already set to different url", "url", info.URL)
-		return fmt.Errorf("webhook is already set to different url")
+		return ErrWebhookAlreadySetToDiffAddress
 	}
 	return SetWebhook(ctx, model.SetWebhookRequest{URL: whURL})
 }

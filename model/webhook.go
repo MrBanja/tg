@@ -14,3 +14,7 @@ type SetWebhookRequest struct {
 	DropPendingUpdates bool     `json:"drop_pending_updates,omitempty"` // Pass true to drop all pending updates
 	SecretToken        string   `json:"secret_token,omitempty"`         // Secret token (1-256 chars: A-Z, a-z, 0-9, _, -) sent in header
 }
+
+type DeleteWebhookRequest struct {
+	DropPendingUpdates bool `json:"drop_pending_updates,omitempty"`
+}

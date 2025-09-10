@@ -14,7 +14,7 @@ import (
 )
 
 func GetWebhookInfo(ctx context.Context) (*model.WebhookInfo, error) {
-	resp, err := send[*model.WebhookInfo](ctx, getWebhookInfoMethod, nil)
+	resp, err := send[*model.WebhookInfo](ctx, "getWebhookInfo", nil)
 	if err != nil {
 		return nil, err
 	}
@@ -22,12 +22,23 @@ func GetWebhookInfo(ctx context.Context) (*model.WebhookInfo, error) {
 }
 
 func SetWebhook(ctx context.Context, req model.SetWebhookRequest) error {
-	resp, err := send[any](ctx, setWebhookMethod, req)
+	resp, err := send[any](ctx, "setWebhook", req)
 	if err != nil {
 		return err
 	}
 	if !resp.Ok {
 		return fmt.Errorf("setWebhook failed: %v", resp.Result)
+	}
+	return nil
+}
+
+func DeleteWebhook(ctx context.Context, req model.DeleteWebhookRequest) error {
+	resp, err := send[any](ctx, "deleteWebhook", req)
+	if err != nil {
+		return err
+	}
+	if !resp.Ok {
+		return fmt.Errorf("deleteWebhook failed: %v", resp.Result)
 	}
 	return nil
 }
@@ -53,18 +64,10 @@ func SendPhoto(ctx context.Context, chatID int, reader io.Reader) (*model.Respon
 		return nil, err
 	}
 
-	return do[any](ctx, sendPhotoMethod, &b, w.FormDataContentType())
+	return do[any](ctx, "sendPhoto", &b, w.FormDataContentType())
 }
 
-type method string
-
-const (
-	getWebhookInfoMethod method = "getWebhookInfo"
-	setWebhookMethod     method = "setWebhook"
-	sendPhotoMethod      method = "sendPhoto"
-)
-
-func send[T any](ctx context.Context, method method, obj any) (*model.Response[T], error) {
+func send[T any](ctx context.Context, method string, obj any) (*model.Response[T], error) {
 	if token == "" {
 		slog.Error("[*] token is empty")
 		return nil, fmt.Errorf("token is empty")
@@ -81,7 +84,7 @@ func send[T any](ctx context.Context, method method, obj any) (*model.Response[T
 
 func do[T any](
 	ctx context.Context,
-	method method,
+	method string,
 	body io.Reader,
 	contentType string,
 ) (*model.Response[T], error) {
@@ -114,6 +117,6 @@ func do[T any](
 	return &res, nil
 }
 
-func buildURL(method method) string {
+func buildURL(method string) string {
 	return fmt.Sprintf("https://api.telegram.org/bot%s/%s", token, method)
 }
