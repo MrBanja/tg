@@ -11,3 +11,4 @@ gen
 *.out
 go.work
 .run
+.DS_Store

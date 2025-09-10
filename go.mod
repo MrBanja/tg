@@ -1,5 +1,3 @@
-module github.com/mrbanja/tg
+module github.com/mrbanja/tg/v2
 
-go 1.22.1
-
-require github.com/mrbanja/snet/v2 v2.2.0 // indirect
+go 1.25.1

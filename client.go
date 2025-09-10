@@ -1,26 +1,119 @@
 package tg
 
 import (
+	"bytes"
+	"context"
+	"encoding/json"
+	"fmt"
+	"io"
 	"log/slog"
-	"os"
+	"mime/multipart"
+	"net/http"
+
+	"github.com/mrbanja/tg/v2/model"
 )
 
-type Client struct {
-	token string
-
-	logger *slog.Logger
+func GetWebhookInfo(ctx context.Context) (*model.WebhookInfo, error) {
+	resp, err := send[*model.WebhookInfo](ctx, getWebhookInfoMethod, nil)
+	if err != nil {
+		return nil, err
+	}
+	return resp.Result, nil
 }
 
-func New(token string, logger *slog.Logger) *Client {
-	if logger == nil {
-		logger = slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
-			AddSource:   false,
-			Level:       slog.LevelInfo,
-			ReplaceAttr: nil,
-		}))
+func SetWebhook(ctx context.Context, req model.SetWebhookRequest) error {
+	resp, err := send[any](ctx, setWebhookMethod, req)
+	if err != nil {
+		return err
 	}
-	return &Client{
-		token:  token,
-		logger: logger,
+	if !resp.Ok {
+		return fmt.Errorf("setWebhook failed: %v", resp.Result)
 	}
+	return nil
+}
+
+func SendPhoto(ctx context.Context, chatID int, reader io.Reader) (*model.Response[any], error) {
+	log := slog.With(slog.Int("chat_id", chatID))
+	var b bytes.Buffer
+	w := multipart.NewWriter(&b)
+	if err := w.WriteField("chat_id", fmt.Sprintf("%d", chatID)); err != nil {
+		log.Error("[*] writeField failed: ", "err", err)
+		return nil, err
+	}
+	fileW, err := w.CreateFormFile("photo", "photo.jpg")
+	if err != nil {
+		log.Error("[*] createFormFile failed: ", "err", err)
+		return nil, err
+	}
+	if _, err := io.Copy(fileW, reader); err != nil {
+		log.Error("[*] copy failed: ", "err", err)
+	}
+	if err := w.Close(); err != nil {
+		log.Error("[*] close failed: ", "err", err)
+		return nil, err
+	}
+
+	return do[any](ctx, sendPhotoMethod, &b, w.FormDataContentType())
+}
+
+type method string
+
+const (
+	getWebhookInfoMethod method = "getWebhookInfo"
+	setWebhookMethod     method = "setWebhook"
+	sendPhotoMethod      method = "sendPhoto"
+)
+
+func send[T any](ctx context.Context, method method, obj any) (*model.Response[T], error) {
+	if token == "" {
+		slog.Error("[*] token is empty")
+		return nil, fmt.Errorf("token is empty")
+	}
+
+	body, err := json.Marshal(obj)
+	if err != nil {
+		slog.Error("[*] marshal obj failed: ", "err", err)
+		return nil, err
+	}
+
+	return do[T](ctx, method, bytes.NewReader(body), "application/json")
+}
+
+func do[T any](
+	ctx context.Context,
+	method method,
+	body io.Reader,
+	contentType string,
+) (*model.Response[T], error) {
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, buildURL(method), body)
+	if err != nil {
+		slog.Error("[*] new request failed: ", "err", err)
+		return nil, err
+	}
+
+	req.Header.Set("Content-Type", contentType)
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		slog.Error("[*] do request failed: ", "err", err)
+		return nil, err
+	}
+
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		respBody, _ := io.ReadAll(resp.Body)
+		slog.Error("[*] status code is not 200", "status", resp.StatusCode, "body", string(respBody))
+		return nil, fmt.Errorf("status code is not 200")
+	}
+
+	var res model.Response[T]
+	if err := json.NewDecoder(resp.Body).Decode(&res); err != nil {
+		return nil, err
+	}
+	return &res, nil
+}
+
+func buildURL(method method) string {
+	return fmt.Sprintf("https://api.telegram.org/bot%s/%s", token, method)
 }
