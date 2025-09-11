@@ -18,3 +18,8 @@ type SetWebhookRequest struct {
 type DeleteWebhookRequest struct {
 	DropPendingUpdates bool `json:"drop_pending_updates,omitempty"`
 }
+
+type DeleteMessageRequest struct {
+	ChatID    int `json:"chat_id"`
+	MessageID int `json:"message_id"`
+}

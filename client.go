@@ -67,6 +67,17 @@ func SendPhoto(ctx context.Context, chatID int, reader io.Reader) (*model.Respon
 	return do[any](ctx, "sendPhoto", &b, w.FormDataContentType())
 }
 
+func DeleteMessage(ctx context.Context, req model.DeleteMessageRequest) error {
+	resp, err := send[any](ctx, "deleteMessage", req)
+	if err != nil {
+		return err
+	}
+	if !resp.Ok {
+		return fmt.Errorf("deleteMessage failed: %v", resp.Result)
+	}
+	return nil
+}
+
 func send[T any](ctx context.Context, method string, obj any) (*model.Response[T], error) {
 	if token == "" {
 		slog.Error("[*] token is empty")
