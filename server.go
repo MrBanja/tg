@@ -33,9 +33,9 @@ type serverOptions struct {
 
 type ServerOptionFunc func(*serverOptions)
 
-func WithDebug() ServerOptionFunc {
+func WithDebug(on bool) ServerOptionFunc {
 	return func(o *serverOptions) {
-		o.debug = true
+		o.debug = on
 	}
 }
 
