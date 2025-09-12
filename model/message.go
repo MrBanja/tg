@@ -81,8 +81,8 @@ type DeleteMessageRequest struct {
 }
 
 type SetMessageReactionRequest struct {
-	ChatID    string              `json:"chat_id"`
-	MessageID string              `json:"message_id"`
+	ChatID    int                 `json:"chat_id"`
+	MessageID int                 `json:"message_id"`
 	Reaction  []ReactionTypeEmoji `json:"reaction,omitempty"`
 	IsBig     *bool               `json:"is_big,omitempty"`
 }
