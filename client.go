@@ -78,6 +78,17 @@ func DeleteMessage(ctx context.Context, req model.DeleteMessageRequest) error {
 	return nil
 }
 
+func SetMessageReaction(ctx context.Context, req model.SetMessageReactionRequest) error {
+	resp, err := send[any](ctx, "setMessageReaction", req)
+	if err != nil {
+		return err
+	}
+	if !resp.Ok {
+		return fmt.Errorf("setMessageReaction failed: %v", resp.Result)
+	}
+	return nil
+}
+
 func send[T any](ctx context.Context, method string, obj any) (*model.Response[T], error) {
 	if token == "" {
 		slog.Error("[*] token is empty")
