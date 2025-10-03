@@ -1,12 +1,13 @@
 package model
 
 type Update struct {
-	ID      int      `json:"update_id"`
-	Message *Message `json:"message,omitempty"`
+	ID            int64          `json:"update_id"`
+	Message       *Message       `json:"message,omitempty"`
+	CallbackQuery *CallbackQuery `json:"callback_query,omitempty"`
 }
 
 type User struct {
-	ID           int    `json:"id"`
+	ID           int64  `json:"id"`
 	IsBot        bool   `json:"is_bot"`
 	FirstName    string `json:"first_name"`
 	LastName     string `json:"last_name,omitempty"`
@@ -16,9 +17,17 @@ type User struct {
 }
 
 type Chat struct {
-	ID        int    `json:"id"`
+	ID        int64  `json:"id"`
 	FirstName string `json:"first_name,omitempty"`
 	LastName  string `json:"last_name,omitempty"`
 	Username  string `json:"username,omitempty"`
 	Type      string `json:"type"`
+}
+
+type CallbackQuery struct {
+	ChatInstance string   `json:"chat_instance"`
+	Data         string   `json:"data"`
+	From         *User    `json:"from,omitempty"`
+	ID           string   `json:"id"`
+	Message      *Message `json:"message,omitempty"`
 }

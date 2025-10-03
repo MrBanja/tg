@@ -1,8 +1,8 @@
 package model
 
 type Message struct {
-	MessageID       int               `json:"message_id"`
-	MessageThreadID *int              `json:"message_thread_id,omitempty"`
+	MessageID       int64             `json:"message_id"`
+	MessageThreadID *int64            `json:"message_thread_id,omitempty"`
 	ReplyToMessage  *Message          `json:"reply_to_message,omitempty"`
 	IsTopicMessage  *bool             `json:"is_topic_message,omitempty"`
 	From            *User             `json:"from,omitempty"`
@@ -75,14 +75,27 @@ type MessageEntity struct {
 	CustomEmojiID string `json:"custom_emoji_id"`
 }
 
+type ReplyParameters struct {
+	MessageID int64 `json:"message_id"`
+}
+
 type DeleteMessageRequest struct {
-	ChatID    int `json:"chat_id"`
-	MessageID int `json:"message_id"`
+	ChatID    int64 `json:"chat_id"`
+	MessageID int64 `json:"message_id"`
+}
+
+type SendMessageRequest struct {
+	ChatID          int64            `json:"chat_id"`
+	MessageThreadID *int64           `json:"message_thread_id,omitempty"`
+	Text            string           `json:"text,omitempty"`
+	ReplyParameters *ReplyParameters `json:"reply_parameters,omitempty"`
+	ReplyMarkup     Markup           `json:"reply_markup,omitempty"`
+	ParseMode       string           `json:"parse_mode,omitempty"`
 }
 
 type SetMessageReactionRequest struct {
-	ChatID    int                 `json:"chat_id"`
-	MessageID int                 `json:"message_id"`
+	ChatID    int64               `json:"chat_id"`
+	MessageID int64               `json:"message_id"`
 	Reaction  []ReactionTypeEmoji `json:"reaction,omitempty"`
 	IsBig     *bool               `json:"is_big,omitempty"`
 }

@@ -14,7 +14,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/mrbanja/tg/v2/model"
+	"github.com/mrbanja/tg/v3/model"
 )
 
 type Server struct {
@@ -136,13 +136,15 @@ func (s *Server) updateHandler() http.Handler {
 			http.Error(w, "unmarshal body failed", http.StatusBadRequest)
 			return
 		}
+		logger := slog.With(slog.Int64("update_id", update.ID))
 
-		logger := slog.With(slog.Int("update_id", update.ID))
+		var request = newRequest(&update)
+		logger = logger.With(slog.String("request_id", request.ID))
 
 		for _, h := range s.handlers {
-			if h.isValid(r.Context(), &update) {
+			if h.isValid(r.Context(), request) {
 				logger.Debug("[*] picked handler")
-				h.handle(r.Context(), &update)
+				h.handle(r.Context(), request)
 				return
 			}
 		}

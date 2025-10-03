@@ -4,13 +4,13 @@ import (
 	"context"
 	"strings"
 
-	"github.com/mrbanja/tg/v2/model"
+	"github.com/mrbanja/tg/v3/model"
 )
 
-type Filter func(ctx context.Context, u *model.Update) bool
+type Filter func(ctx context.Context, req *Request) bool
 
 // MessageFilter should be used with FilterMessage func
-type MessageFilter func(ctx context.Context, u *model.Message) bool
+type MessageFilter func(ctx context.Context, m *model.Message) bool
 
 func FilterReplyMessage(replyMessageFilters ...MessageFilter) MessageFilter {
 	return func(ctx context.Context, m *model.Message) bool {
@@ -30,7 +30,8 @@ func FilterReplyMessage(replyMessageFilters ...MessageFilter) MessageFilter {
 func FilterCommand(cmd string) Filter {
 	cmd = "/" + strings.ToLower(strings.TrimPrefix(cmd, "/"))
 
-	return func(ctx context.Context, u *model.Update) bool {
+	return func(ctx context.Context, req *Request) bool {
+		u := req.Update
 		if u.Message == nil {
 			return false
 		}
@@ -50,9 +51,9 @@ func FilterCommand(cmd string) Filter {
 }
 
 func FilterOr(filters ...Filter) Filter {
-	return func(ctx context.Context, u *model.Update) bool {
+	return func(ctx context.Context, req *Request) bool {
 		for _, f := range filters {
-			if f(ctx, u) {
+			if f(ctx, req) {
 				return true
 			}
 		}
@@ -60,12 +61,12 @@ func FilterOr(filters ...Filter) Filter {
 	}
 }
 func FilterMessage(filters ...MessageFilter) Filter {
-	return func(ctx context.Context, u *model.Update) bool {
-		if u.Message == nil {
+	return func(ctx context.Context, req *Request) bool {
+		if req.Update.Message == nil {
 			return false
 		}
 		for _, f := range filters {
-			if !f(ctx, u.Message) {
+			if !f(ctx, req.Update.Message) {
 				return false
 			}
 		}

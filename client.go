@@ -10,7 +10,7 @@ import (
 	"mime/multipart"
 	"net/http"
 
-	"github.com/mrbanja/tg/v2/model"
+	"github.com/mrbanja/tg/v3/model"
 )
 
 func GetWebhookInfo(ctx context.Context) (*model.WebhookInfo, error) {
@@ -43,8 +43,8 @@ func DeleteWebhook(ctx context.Context, req model.DeleteWebhookRequest) error {
 	return nil
 }
 
-func SendPhoto(ctx context.Context, chatID int, reader io.Reader) (*model.Response[any], error) {
-	log := slog.With(slog.Int("chat_id", chatID))
+func SendPhoto(ctx context.Context, chatID int64, reader io.Reader) (*model.Response[any], error) {
+	log := slog.With(slog.Int64("chat_id", chatID))
 	var b bytes.Buffer
 	w := multipart.NewWriter(&b)
 	if err := w.WriteField("chat_id", fmt.Sprintf("%d", chatID)); err != nil {
@@ -85,6 +85,17 @@ func SetMessageReaction(ctx context.Context, req model.SetMessageReactionRequest
 	}
 	if !resp.Ok {
 		return fmt.Errorf("setMessageReaction failed: %v", resp.Result)
+	}
+	return nil
+}
+
+func SendMessage(ctx context.Context, req model.SendMessageRequest) error {
+	resp, err := send[any](ctx, "sendMessage", req)
+	if err != nil {
+		return err
+	}
+	if !resp.Ok {
+		return fmt.Errorf("sendMessage failed: %v", resp.Result)
 	}
 	return nil
 }
