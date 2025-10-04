@@ -100,6 +100,17 @@ func SendMessage(ctx context.Context, req model.SendMessageRequest) error {
 	return nil
 }
 
+func EditMessageText(ctx context.Context, req model.EditMessageTextRequest) error {
+	resp, err := send[any](ctx, "editMessageText", req)
+	if err != nil {
+		return err
+	}
+	if !resp.Ok {
+		return fmt.Errorf("editMessageText failed: %v", resp.Result)
+	}
+	return nil
+}
+
 func send[T any](ctx context.Context, method string, obj any) (*model.Response[T], error) {
 	if token == "" {
 		slog.Error("[*] token is empty")

@@ -100,6 +100,21 @@ type SetMessageReactionRequest struct {
 	IsBig     *bool               `json:"is_big,omitempty"`
 }
 
+type EditMessageTextRequest struct {
+	// Unique identifier of the business connection on behalf of which the message to be edited was sent
+	BusinessConnectionID *string `json:"business_connection_id,omitempty"`
+	// Required if inline_message_id is not specified. Unique identifier for the target chat or username of the target channel
+	ChatID *int64 `json:"chat_id,omitempty"`
+	// Required if inline_message_id is not specified. Identifier of the message to edit
+	MessageID *int64 `json:"message_id,omitempty"`
+	// Required if chat_id and message_id are not specified. Identifier of the inline message
+	InlineMessageID *string         `json:"inline_message_id,omitempty"`
+	Text            string          `json:"text"`
+	ParseMode       string          `json:"parse_mode,omitempty"`
+	Entities        []MessageEntity `json:"entities,omitempty"`
+	ReplyMarkup     Markup          `json:"reply_markup,omitempty"`
+}
+
 type ReactionTypeEmojiType string
 
 const (
