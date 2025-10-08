@@ -50,6 +50,33 @@ func FilterCommand(cmd string) Filter {
 	}
 }
 
+// FilterCommandWithOptionalBotName filters command with optional bot tag: /text@test_bot
+func FilterCommandWithOptionalBotName(cmd string, botTag string) Filter {
+	return func(ctx context.Context, req *Request) bool {
+		u := req.Update
+		if u.Message == nil {
+			return false
+		}
+		if len(u.Message.Entities) == 0 {
+			return false
+		}
+		if u.Message.Text == nil {
+			return false
+		}
+		text := *u.Message.Text
+
+		for _, e := range u.Message.Entities {
+			if e.Type == "bot_command" &&
+				e.Offset == 0 &&
+				((text)[e.Offset:e.Offset+e.Length] == cmd ||
+					(text)[e.Offset:e.Offset+e.Length] == cmd+botTag) {
+				return true
+			}
+		}
+		return false
+	}
+}
+
 func FilterOr(filters ...Filter) Filter {
 	return func(ctx context.Context, req *Request) bool {
 		for _, f := range filters {
