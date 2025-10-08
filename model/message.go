@@ -9,6 +9,7 @@ type Message struct {
 	Chat            *Chat             `json:"chat,omitempty"`
 	Date            int64             `json:"date"`
 	Text            *string           `json:"text,omitempty"`
+	Caption         *string           `json:"caption,omitempty"`
 	Sticker         *Sticker          `json:"sticker,omitempty"`
 	Photo           []*MessagePhoto   `json:"photo,omitempty"`
 	Document        *MessageDocument  `json:"document,omitempty"`
