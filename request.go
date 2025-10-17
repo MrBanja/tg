@@ -4,7 +4,7 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 
-	"github.com/mrbanja/tg/model"
+	"github.com/mrbanja/tg/v4/model"
 )
 
 type Request struct {

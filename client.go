@@ -10,7 +10,7 @@ import (
 	"mime/multipart"
 	"net/http"
 
-	"github.com/mrbanja/tg/model"
+	"github.com/mrbanja/tg/v4/model"
 )
 
 func GetWebhookInfo(ctx context.Context) (*model.WebhookInfo, error) {

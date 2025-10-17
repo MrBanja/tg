@@ -4,7 +4,7 @@ import (
 	"context"
 	"strings"
 
-	"github.com/mrbanja/tg/model"
+	"github.com/mrbanja/tg/v4/model"
 )
 
 type Filter func(ctx context.Context, req *Request) bool
