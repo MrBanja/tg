@@ -10,7 +10,7 @@ import (
 	"mime/multipart"
 	"net/http"
 
-	"github.com/mrbanja/tg/v3/model"
+	"github.com/mrbanja/tg/model"
 )
 
 func GetWebhookInfo(ctx context.Context) (*model.WebhookInfo, error) {
@@ -89,15 +89,15 @@ func SetMessageReaction(ctx context.Context, req model.SetMessageReactionRequest
 	return nil
 }
 
-func SendMessage(ctx context.Context, req model.SendMessageRequest) error {
-	resp, err := send[any](ctx, "sendMessage", req)
+func SendMessage(ctx context.Context, req model.SendMessageRequest) (*model.Message, error) {
+	resp, err := send[*model.Message](ctx, "sendMessage", req)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	if !resp.Ok {
-		return fmt.Errorf("sendMessage failed: %v", resp.Result)
+		return nil, fmt.Errorf("sendMessage failed: %v", resp.Result)
 	}
-	return nil
+	return resp.Result, nil
 }
 
 func EditMessageText(ctx context.Context, req model.EditMessageTextRequest) error {

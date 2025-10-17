@@ -14,7 +14,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/mrbanja/tg/v3/model"
+	"github.com/mrbanja/tg/model"
 )
 
 type Server struct {
