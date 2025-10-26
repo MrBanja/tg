@@ -79,13 +79,13 @@ func (s *Server) SetWebhook(ctx context.Context, path string) error {
 	return SetWebhook(ctx, model.SetWebhookRequest{URL: whURL})
 }
 
-func (s *Server) Server(ctx context.Context) {
+func (s *Server) Server(ctx context.Context, handler http.Handler) {
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
 	server := &http.Server{
 		Addr:    s.addr,
-		Handler: s.updateHandler(),
+		Handler: s.updateHandler(handler),
 		BaseContext: func(net.Listener) context.Context {
 			return ctx
 		},
@@ -114,7 +114,7 @@ func (s *Server) Server(ctx context.Context) {
 	}
 }
 
-func (s *Server) updateHandler() http.Handler {
+func (s *Server) updateHandler(handler http.Handler) http.Handler {
 	mux := http.NewServeMux()
 	mux.HandleFunc(s.webhookPath, func(w http.ResponseWriter, r *http.Request) {
 		body, err := io.ReadAll(r.Body)
@@ -150,5 +150,9 @@ func (s *Server) updateHandler() http.Handler {
 		}
 		logger.Debug("[*] no handler picked for an update")
 	})
+
+	if handler != nil {
+		mux.Handle("/", handler)
+	}
 	return mux
 }
