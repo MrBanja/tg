@@ -97,7 +97,7 @@ type SendMessageRequest struct {
 type SetMessageReactionRequest struct {
 	ChatID    int64               `json:"chat_id"`
 	MessageID int64               `json:"message_id"`
-	Reaction  []ReactionTypeEmoji `json:"reaction,omitempty"`
+	Reaction  []ReactionTypeEmoji `json:"reaction"`
 	IsBig     *bool               `json:"is_big,omitempty"`
 }
 
