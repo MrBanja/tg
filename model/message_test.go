@@ -20,3 +20,21 @@ func TestSetMessageReactionRequestMarshalIncludesEmptyReactionArray(t *testing.T
 		t.Fatalf("unexpected json: %s", string(data))
 	}
 }
+
+func TestSendMessageRequestMarshalIncludesLinkPreviewOptions(t *testing.T) {
+	data, err := json.Marshal(SendMessageRequest{
+		ChatID: 1,
+		Text:   "hello",
+		LinkPreviewOptions: &LinkPreviewOptions{
+			IsDisabled: true,
+		},
+	})
+	if err != nil {
+		t.Fatalf("marshal failed: %v", err)
+	}
+
+	want := `{"chat_id":1,"text":"hello","link_preview_options":{"is_disabled":true}}`
+	if string(data) != want {
+		t.Fatalf("unexpected json: %s", string(data))
+	}
+}

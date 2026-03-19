@@ -86,12 +86,17 @@ type DeleteMessageRequest struct {
 }
 
 type SendMessageRequest struct {
-	ChatID          int64            `json:"chat_id"`
-	MessageThreadID *int64           `json:"message_thread_id,omitempty"`
-	Text            string           `json:"text,omitempty"`
-	ReplyParameters *ReplyParameters `json:"reply_parameters,omitempty"`
-	ReplyMarkup     Markup           `json:"reply_markup,omitempty"`
-	ParseMode       string           `json:"parse_mode,omitempty"`
+	ChatID             int64               `json:"chat_id"`
+	MessageThreadID    *int64              `json:"message_thread_id,omitempty"`
+	Text               string              `json:"text,omitempty"`
+	ReplyParameters    *ReplyParameters    `json:"reply_parameters,omitempty"`
+	ReplyMarkup        Markup              `json:"reply_markup,omitempty"`
+	ParseMode          string              `json:"parse_mode,omitempty"`
+	LinkPreviewOptions *LinkPreviewOptions `json:"link_preview_options,omitempty"`
+}
+
+type LinkPreviewOptions struct {
+	IsDisabled bool `json:"is_disabled,omitempty"`
 }
 
 type SetMessageReactionRequest struct {
