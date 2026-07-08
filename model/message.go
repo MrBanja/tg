@@ -9,6 +9,7 @@ type Message struct {
 	IsTopicMessage  *bool             `json:"is_topic_message,omitempty"`
 	From            *User             `json:"from,omitempty"`
 	Chat            *Chat             `json:"chat,omitempty"`
+	ForwardOrigin   *MessageOrigin    `json:"forward_origin,omitempty"`
 	Date            int64             `json:"date"`
 	Text            *string           `json:"text,omitempty"`
 	Caption         *string           `json:"caption,omitempty"`
@@ -70,6 +71,13 @@ type Sticker struct {
 	SetName      string `json:"set_name"`
 	Type         string `json:"type"`
 	Width        int    `json:"width"`
+}
+
+// MessageOrigin describes the origin of a forwarded message; only the fields
+// shared by all origin variants (user, hidden_user, chat, channel) are mapped.
+type MessageOrigin struct {
+	Type string `json:"type"`
+	Date int64  `json:"date"`
 }
 
 type MessageEntity struct {
