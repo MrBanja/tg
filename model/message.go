@@ -1,5 +1,7 @@
 package model
 
+import "encoding/json"
+
 type Message struct {
 	MessageID       int64             `json:"message_id"`
 	MessageThreadID *int64            `json:"message_thread_id,omitempty"`
@@ -10,6 +12,7 @@ type Message struct {
 	Date            int64             `json:"date"`
 	Text            *string           `json:"text,omitempty"`
 	Caption         *string           `json:"caption,omitempty"`
+	RichMessage     *RichMessage      `json:"rich_message,omitempty"`
 	Sticker         *Sticker          `json:"sticker,omitempty"`
 	Photo           []*MessagePhoto   `json:"photo,omitempty"`
 	Document        *MessageDocument  `json:"document,omitempty"`
@@ -96,6 +99,34 @@ type SendMessageRequest struct {
 	LinkPreviewOptions *LinkPreviewOptions `json:"link_preview_options,omitempty"`
 }
 
+type SendRichMessageRequest struct {
+	BusinessConnectionID  string           `json:"business_connection_id,omitempty"`
+	ChatID                int64            `json:"chat_id"`
+	MessageThreadID       *int64           `json:"message_thread_id,omitempty"`
+	DirectMessagesTopicID int64            `json:"direct_messages_topic_id,omitempty"`
+	RichMessage           InputRichMessage `json:"rich_message"`
+	DisableNotification   bool             `json:"disable_notification,omitempty"`
+	ProtectContent        bool             `json:"protect_content,omitempty"`
+	AllowPaidBroadcast    bool             `json:"allow_paid_broadcast,omitempty"`
+	MessageEffectID       string           `json:"message_effect_id,omitempty"`
+	ReplyParameters       *ReplyParameters `json:"reply_parameters,omitempty"`
+	ReplyMarkup           Markup           `json:"reply_markup,omitempty"`
+}
+
+type SendRichMessageDraftRequest struct {
+	ChatID          int64            `json:"chat_id"`
+	MessageThreadID *int64           `json:"message_thread_id,omitempty"`
+	DraftID         int64            `json:"draft_id"`
+	RichMessage     InputRichMessage `json:"rich_message"`
+}
+
+type InputRichMessage struct {
+	HTML                string `json:"html,omitempty"`
+	Markdown            string `json:"markdown,omitempty"`
+	IsRTL               bool   `json:"is_rtl,omitempty"`
+	SkipEntityDetection bool   `json:"skip_entity_detection,omitempty"`
+}
+
 type LinkPreviewOptions struct {
 	IsDisabled bool `json:"is_disabled,omitempty"`
 }
@@ -115,11 +146,18 @@ type EditMessageTextRequest struct {
 	// Required if inline_message_id is not specified. Identifier of the message to edit
 	MessageID *int64 `json:"message_id,omitempty"`
 	// Required if chat_id and message_id are not specified. Identifier of the inline message
-	InlineMessageID *string         `json:"inline_message_id,omitempty"`
-	Text            string          `json:"text"`
-	ParseMode       string          `json:"parse_mode,omitempty"`
-	Entities        []MessageEntity `json:"entities,omitempty"`
-	ReplyMarkup     Markup          `json:"reply_markup,omitempty"`
+	InlineMessageID    *string             `json:"inline_message_id,omitempty"`
+	Text               string              `json:"text,omitempty"`
+	ParseMode          string              `json:"parse_mode,omitempty"`
+	Entities           []MessageEntity     `json:"entities,omitempty"`
+	LinkPreviewOptions *LinkPreviewOptions `json:"link_preview_options,omitempty"`
+	RichMessage        *InputRichMessage   `json:"rich_message,omitempty"`
+	ReplyMarkup        Markup              `json:"reply_markup,omitempty"`
+}
+
+type RichMessage struct {
+	Blocks []json.RawMessage `json:"blocks"`
+	IsRTL  bool              `json:"is_rtl,omitempty"`
 }
 
 type ReactionTypeEmojiType string

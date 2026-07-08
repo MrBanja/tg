@@ -100,6 +100,28 @@ func SendMessage(ctx context.Context, req model.SendMessageRequest) (*model.Mess
 	return resp.Result, nil
 }
 
+func SendRichMessage(ctx context.Context, req model.SendRichMessageRequest) (*model.Message, error) {
+	resp, err := send[*model.Message](ctx, "sendRichMessage", req)
+	if err != nil {
+		return nil, err
+	}
+	if !resp.Ok {
+		return nil, fmt.Errorf("sendRichMessage failed: %v", resp.Result)
+	}
+	return resp.Result, nil
+}
+
+func SendRichMessageDraft(ctx context.Context, req model.SendRichMessageDraftRequest) error {
+	resp, err := send[any](ctx, "sendRichMessageDraft", req)
+	if err != nil {
+		return err
+	}
+	if !resp.Ok {
+		return fmt.Errorf("sendRichMessageDraft failed: %v", resp.Result)
+	}
+	return nil
+}
+
 func EditMessageText(ctx context.Context, req model.EditMessageTextRequest) error {
 	resp, err := send[any](ctx, "editMessageText", req)
 	if err != nil {
