@@ -173,7 +173,7 @@ func do[T any](
 	if resp.StatusCode != http.StatusOK {
 		respBody, _ := io.ReadAll(resp.Body)
 		slog.Error("[*] status code is not 200", "status", resp.StatusCode, "body", string(respBody))
-		return nil, fmt.Errorf("status code is not 200")
+		return nil, fmt.Errorf("%s: status %d: %s", method, resp.StatusCode, bytes.TrimSpace(respBody))
 	}
 
 	var res model.Response[T]
