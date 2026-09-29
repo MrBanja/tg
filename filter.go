@@ -141,3 +141,81 @@ func FilterContainsAnimation(_ context.Context, m *model.Message) bool {
 func FilterContainsVideo(_ context.Context, m *model.Message) bool {
 	return m.Video != nil
 }
+
+// FilterCallbackQuery matches callback queries whose data passes all filters.
+func FilterCallbackQuery(filters ...func(ctx context.Context, q *model.CallbackQuery) bool) Filter {
+	return func(ctx context.Context, req *Request) bool {
+		q := req.Update.CallbackQuery
+		if q == nil {
+			return false
+		}
+		for _, f := range filters {
+			if !f(ctx, q) {
+				return false
+			}
+		}
+		return true
+	}
+}
+
+// FilterCallbackDataPrefix matches callback queries whose data starts with prefix.
+func FilterCallbackDataPrefix(prefix string) Filter {
+	return FilterCallbackQuery(func(_ context.Context, q *model.CallbackQuery) bool {
+		return strings.HasPrefix(q.Data, prefix)
+	})
+}
+
+// FilterStoppedMessageGeneration matches stopped_message_generation updates.
+func FilterStoppedMessageGeneration(_ context.Context, req *Request) bool {
+	return req.Update.StoppedMessageGeneration != nil
+}
+
+// FilterPrivateChat matches updates that come from a private chat.
+func FilterPrivateChat(_ context.Context, req *Request) bool {
+	u := req.Update
+	switch {
+	case u.Message != nil:
+		return u.Message.Chat != nil && u.Message.Chat.Type == "private"
+	case u.CallbackQuery != nil:
+		m := u.CallbackQuery.Message
+		return m != nil && m.Chat != nil && m.Chat.Type == "private"
+	case u.StoppedMessageGeneration != nil:
+		return u.StoppedMessageGeneration.Chat.Type == "private"
+	}
+	return false
+}
+
+// FilterText matches messages with text that is not a bot command.
+func FilterText(_ context.Context, m *model.Message) bool {
+	if m.Text == nil {
+		return false
+	}
+	for _, e := range m.Entities {
+		if e.Type == "bot_command" && e.Offset == 0 {
+			return false
+		}
+	}
+	return true
+}
+
+func FilterContainsVoice(_ context.Context, m *model.Message) bool {
+	return m.Voice != nil
+}
+
+func FilterContainsAudio(_ context.Context, m *model.Message) bool {
+	return m.Audio != nil
+}
+
+// FilterContainsLocation matches shared locations, including venues.
+func FilterContainsLocation(_ context.Context, m *model.Message) bool {
+	return m.Location != nil || m.Venue != nil
+}
+
+func FilterContainsVenue(_ context.Context, m *model.Message) bool {
+	return m.Venue != nil
+}
+
+// FilterMediaGroup matches messages that belong to a media group (album).
+func FilterMediaGroup(_ context.Context, m *model.Message) bool {
+	return m.MediaGroupID != nil
+}

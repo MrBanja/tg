@@ -4,6 +4,15 @@ type Update struct {
 	ID            int64          `json:"update_id"`
 	Message       *Message       `json:"message,omitempty"`
 	CallbackQuery *CallbackQuery `json:"callback_query,omitempty"`
+	// StoppedMessageGeneration is sent when a user presses the stop button of a draft (can_stop).
+	StoppedMessageGeneration *MessageGenerationStopped `json:"stopped_message_generation,omitempty"`
+}
+
+// MessageGenerationStopped describes a user stopping message generation.
+type MessageGenerationStopped struct {
+	Chat            Chat   `json:"chat"`
+	MessageThreadID *int64 `json:"message_thread_id,omitempty"`
+	DraftID         int64  `json:"draft_id"`
 }
 
 type User struct {
@@ -25,9 +34,10 @@ type Chat struct {
 }
 
 type CallbackQuery struct {
-	ChatInstance string   `json:"chat_instance"`
-	Data         string   `json:"data"`
-	From         *User    `json:"from,omitempty"`
-	ID           string   `json:"id"`
-	Message      *Message `json:"message,omitempty"`
+	ChatInstance    string   `json:"chat_instance"`
+	Data            string   `json:"data"`
+	From            *User    `json:"from,omitempty"`
+	ID              string   `json:"id"`
+	Message         *Message `json:"message,omitempty"`
+	InlineMessageID string   `json:"inline_message_id,omitempty"`
 }
